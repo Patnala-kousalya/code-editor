@@ -1,0 +1,11 @@
+services:
+  code-editor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_APP_NAME=${VITE_APP_NAME:-code-editor}
+      - VITE_DEFAULT_THEME=${VITE_DEFAULT_THEME:-dark}
+    restart: unless-stopped

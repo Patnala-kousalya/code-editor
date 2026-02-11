@@ -1,86 +1,160 @@
-# Code Editor (React + Vite + Monaco)
+# 🚀 Advanced Web Code Editor (React + Monaco)
 
-Production-ready frontend code editor built with React, Vite, and Monaco Editor. The project keeps a glass-style interface and focuses on editor reliability, keyboard-driven workflows, responsive behavior, and clean component structure.
+A modern browser-based code editor built using React and Monaco Editor with an advanced UI, real-time keyboard event debugger, command palette, and production-ready deployment support.
 
-## Project Description
+---
 
-This app provides a browser-based code editor workspace with:
-- Monaco-based editing
-- Multi-file tab switching
-- Keyboard event tracking
-- Command palette shortcuts
-- Save status feedback
-- Responsive desktop/mobile behavior
+## 🌟 Overview
 
-## Setup Steps
+This project demonstrates a fully functional web code editor interface inspired by modern developer tools. It focuses on usability, keyboard interaction architecture, responsive layout, and real-world deployment practices.
 
-1. Install Node.js 20+.
-2. Install dependencies:
+---
 
-```bash
-npm install
-```
+## ✨ Features
 
-3. (Optional) create local env file:
+- ⚡ Monaco Editor integration (VS Code engine)
+- 🎨 Modern dark UI with glassmorphism styling
+- ⌨️ Real-time keyboard Event Debugger
+- 💾 Save shortcut support (Ctrl + S)
+- 🔎 Command Palette (Ctrl + K)
+- 📊 Status bar for typing and actions
+- 📱 Responsive workspace layout
+- 🐳 Docker support for containerized deployment
+- ⚡ Built using Vite for high performance
 
-```bash
-cp .env.example .env
-```
+---
 
-## Run Instructions
+## 🧠 Key Functionalities
 
-### Development
+### Code Editor
+- Syntax-ready editing environment
+- Word wrap enabled
+- Custom font support
+- Optimized layout rendering
 
-```bash
-npm run dev
-```
+### Event Debugger
+Tracks and displays:
+- key pressed
+- ctrl usage
+- shift usage
+- editor activity
 
-### Production Build
+### Command Palette
+Provides quick actions:
+- Save file
+- Clear editor
+- Toggle editor behaviors
 
-```bash
-npm run build
-```
+### Status Bar
+Displays:
+- Ready state
+- Typing state
+- Save confirmation
 
-### Preview Production Build
+---
 
-```bash
-npm run preview -- --host 0.0.0.0 --port 5173
-```
+## 🛠 Tech Stack
 
-### Docker
+Frontend:
+- React.js
+- Monaco Editor
+- Vite
+- CSS (Advanced UI styling)
 
-Build and run with docker compose:
+Tools:
+- Docker
+- GitHub
 
-```bash
-docker-compose up --build
-```
+---
 
-Open: `http://localhost:5173`
+## 📦 Installation
 
-## Features
+npm install  
+npm run dev  
 
-- Stable Monaco typing and file updates
-- `editor.onKeyUp` keyboard event tracking in event debugger panel
-- `Ctrl+S` save shortcut with status bar timestamp
-- `Ctrl+K` command palette (center overlay)
-- `Escape` to close command palette
-- Status bar states: `Ready`, `Typing...`, `Saved <time>`
-- Tabs: `index.js`, `style.css`, `README.md`
-- Internal dark/light theme toggle logic
-- Floating AI button UI in bottom-right
-- Responsive workspace behavior on smaller screens
-- Accessibility improvements (focus-visible, ARIA roles, keyboard tab navigation)
-- Component separation:
-  - `Editor`
-  - `Tabs`
-  - `CommandPalette`
-  - `StatusBar`
+Application runs at:  
+http://localhost:5173
 
-## Environment Variables
+---
 
-See `.env.example`:
-- `VITE_APP_NAME`
-- `VITE_DEFAULT_THEME`
-- `VITE_ENABLE_AI_FAB`
+## 🏗 Production Build
 
-No secret keys are stored in the repository.
+npm run build  
+npm run preview  
+
+---
+
+## 🐳 Docker Usage
+
+Build container:
+
+docker build -t code-editor .
+
+Run container:
+
+docker run -p 5173:5173 code-editor
+
+---
+
+## 📂 Project Structure
+
+src/
+ ├── App.jsx
+ ├── main.jsx
+ ├── index.css
+
+components/
+ ├── Editor
+ ├── DebugPanel
+ ├── CommandPalette
+
+---
+
+## 🚀 Deployment
+
+This project can be deployed using:
+
+- Vercel
+- Netlify
+- Docker
+- Render
+
+---
+
+## 🔧 Advanced Concepts Implemented
+
+- Monaco editor browser integration
+- Keyboard shortcut architecture
+- Event state tracking in React
+- Glassmorphism UI layering
+- Responsive editor workspace
+- Command palette interaction flow
+
+---
+
+## 📈 Future Enhancements
+
+- Multi-language editor support
+- Theme switcher
+- File explorer UI
+- Git integration
+- AI-assisted coding panel
+
+---
+
+## 📸 Screenshots
+
+(Add project UI screenshots here)
+
+---
+
+## 👨‍💻 Author
+
+Your Name  
+Frontend Developer  
+
+---
+
+## 📜 License
+
+MIT License

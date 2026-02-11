@@ -1,0 +1,29 @@
+#root {
+  height: 100vh;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.split-layout {
+  display: flex;
+  gap: 16px;
+  height: 100%;
+}
+
+.editor {
+  flex: 0 0 70%;
+  resize: none;
+  padding: 12px;
+  font: 14px/1.5 monospace;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.events-panel {
+  flex: 0 0 30%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
