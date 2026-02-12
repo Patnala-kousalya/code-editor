@@ -8,11 +8,29 @@ const buttonBaseStyle = {
   borderRadius: "10px",
   cursor: "pointer",
   fontSize: "13px",
-  transition: "transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease",
+  transition: "transform 0.2s ease, box-shadow 0.2s ease",
 };
 
-const Toolbar = memo(function Toolbar({ onRun, onSave, onFormat, onToggleTheme, theme }) {
+const disabledStyle = {
+  opacity: 0.5,
+  cursor: "not-allowed",
+};
+
+const Toolbar = memo(function Toolbar({
+  onRun,
+  onSave,
+  onFormat,
+  onToggleTheme,
+  theme,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+}) {
   const onHover = (event) => {
+    if (event.currentTarget.disabled) {
+      return;
+    }
     event.currentTarget.style.transform = "translateY(-1px)";
     event.currentTarget.style.boxShadow = "0 8px 18px rgba(0,0,0,0.25)";
   };
@@ -50,8 +68,26 @@ const Toolbar = memo(function Toolbar({ onRun, onSave, onFormat, onToggleTheme, 
       <button {...sharedProps} onClick={onSave} aria-label="Save file">
         Save
       </button>
-      <button {...sharedProps} onClick={onFormat} aria-label="Format file">
+      <button {...sharedProps} onClick={onFormat} aria-label="Format code">
         Format
+      </button>
+      <button
+        {...sharedProps}
+        onClick={onUndo}
+        aria-label="Undo"
+        disabled={!canUndo}
+        style={!canUndo ? { ...buttonBaseStyle, ...disabledStyle } : buttonBaseStyle}
+      >
+        Undo
+      </button>
+      <button
+        {...sharedProps}
+        onClick={onRedo}
+        aria-label="Redo"
+        disabled={!canRedo}
+        style={!canRedo ? { ...buttonBaseStyle, ...disabledStyle } : buttonBaseStyle}
+      >
+        Redo
       </button>
       <button {...sharedProps} onClick={onToggleTheme} aria-label="Toggle theme">
         {theme === "dark" ? "Light" : "Dark"}

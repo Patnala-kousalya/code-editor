@@ -10,18 +10,17 @@ const LANGUAGE_BY_TAB = {
 const Editor = memo(function Editor({
   activeTab,
   files,
+  theme,
   onChange,
-  onSave,
-  onOpenPalette,
-  onClosePalette,
   onKeyUp,
+  onCursorChange,
 }) {
   const disposablesRef = useRef([]);
-  const handlersRef = useRef({ onSave, onOpenPalette, onClosePalette, onKeyUp });
+  const handlersRef = useRef({ onKeyUp, onCursorChange });
 
   useEffect(() => {
-    handlersRef.current = { onSave, onOpenPalette, onClosePalette, onKeyUp };
-  }, [onSave, onOpenPalette, onClosePalette, onKeyUp]);
+    handlersRef.current = { onKeyUp, onCursorChange };
+  }, [onKeyUp, onCursorChange]);
 
   useEffect(() => {
     return () => {
@@ -36,37 +35,23 @@ const Editor = memo(function Editor({
     disposablesRef.current.forEach((item) => item?.dispose?.());
     disposablesRef.current = [];
 
-    const keyDownDisposable = editor.onKeyDown((event) => {
-      const browserEvent = event.browserEvent;
-      const key = browserEvent.key.toLowerCase();
-      const isModifier = browserEvent.ctrlKey || browserEvent.metaKey;
-
-      if (isModifier && key === "s") {
-        browserEvent.preventDefault();
-        handlersRef.current.onSave();
-        return;
-      }
-
-      if (isModifier && key === "k") {
-        browserEvent.preventDefault();
-        handlersRef.current.onOpenPalette();
-        return;
-      }
-
-      if (key === "escape") {
-        handlersRef.current.onClosePalette();
-      }
-    });
-
     const keyUpDisposable = editor.onKeyUp((event) => {
       handlersRef.current.onKeyUp({
         key: event.browserEvent.key,
-        ctrl: event.browserEvent.ctrlKey || event.browserEvent.metaKey,
+        ctrlMeta: event.browserEvent.ctrlKey || event.browserEvent.metaKey,
         shift: event.browserEvent.shiftKey,
+        timestamp: new Date().toLocaleTimeString(),
       });
     });
 
-    disposablesRef.current.push(keyDownDisposable, keyUpDisposable);
+    const cursorDisposable = editor.onDidChangeCursorPosition((event) => {
+      handlersRef.current.onCursorChange({
+        line: event.position.lineNumber,
+        column: event.position.column,
+      });
+    });
+
+    disposablesRef.current.push(keyUpDisposable, cursorDisposable);
   };
 
   const language = LANGUAGE_BY_TAB[activeTab] ?? "plaintext";
@@ -77,13 +62,31 @@ const Editor = memo(function Editor({
       id={`panel-${activeTab}`}
       role="tabpanel"
       aria-labelledby={`tab-${activeTab}`}
+      aria-label="Code editor panel"
     >
       <MonacoEditor
         height="100%"
         path={activeTab}
         language={language}
         value={files[activeTab]}
-        theme="vs-dark"
+        theme={theme === "light" ? "vs" : "vs-dark"}
+        loading={
+          <div
+            aria-label="Editor loading"
+            style={{
+              height: "100%",
+              borderRadius: "14px",
+              background: "rgba(255,255,255,0.04)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: 0.85,
+              transition: "opacity 0.2s ease",
+            }}
+          >
+            Loading editor...
+          </div>
+        }
         options={{
           minimap: { enabled: false },
           fontSize: 15,

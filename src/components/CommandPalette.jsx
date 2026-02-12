@@ -1,10 +1,4 @@
-import { memo, useEffect, useMemo, useState } from "react";
-
-const DEFAULT_COMMANDS = [
-  { id: "save", label: "Save File" },
-  { id: "clear", label: "Clear Editor" },
-  { id: "toggle-theme", label: "Toggle Dark Mode" },
-];
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 const CommandPalette = memo(function CommandPalette({
   open,
@@ -12,27 +6,33 @@ const CommandPalette = memo(function CommandPalette({
   onValueChange,
   onClose,
   onExecute,
-  commands = DEFAULT_COMMANDS,
+  commands,
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  useEffect(() => {
-    if (open) {
-      setSelectedIndex(0);
-    }
-  }, [open]);
+  const dialogRef = useRef(null);
+  const inputRef = useRef(null);
 
   const filtered = useMemo(() => {
     const query = value.trim().toLowerCase();
-
     if (!query) {
       return commands;
     }
 
-    return commands.filter((command) =>
-      command.label.toLowerCase().includes(query)
-    );
+    return commands.filter((command) => command.label.toLowerCase().includes(query));
   }, [commands, value]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setSelectedIndex(0);
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [open]);
 
   if (!open) {
     return null;
@@ -40,11 +40,9 @@ const CommandPalette = memo(function CommandPalette({
 
   const executeCurrent = () => {
     const command = filtered[selectedIndex];
-
     if (!command) {
       return;
     }
-
     onExecute(command.id);
   };
 
@@ -76,16 +74,47 @@ const CommandPalette = memo(function CommandPalette({
     }
   };
 
+  const handleFocusTrap = (event) => {
+    if (event.key !== "Tab") {
+      return;
+    }
+
+    const focusable = dialogRef.current?.querySelectorAll(
+      'input, button, [href], [tabindex]:not([tabindex="-1"])'
+    );
+
+    if (!focusable || focusable.length === 0) {
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+
+    if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   return (
     <div className="palette-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="palette-box"
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
         onClick={(event) => event.stopPropagation()}
+        onKeyDown={handleFocusTrap}
       >
         <input
+          ref={inputRef}
           autoFocus
           placeholder="Type a command..."
           value={value}
@@ -99,14 +128,22 @@ const CommandPalette = memo(function CommandPalette({
             <div
               key={command.id}
               role="option"
+              tabIndex={0}
               aria-selected={selectedIndex === index}
               className={selectedIndex === index ? "palette-item active" : "palette-item"}
               onMouseEnter={() => setSelectedIndex(index)}
               onClick={() => onExecute(command.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  onExecute(command.id);
+                }
+              }}
             >
               {command.label}
             </div>
           ))}
+
           {filtered.length === 0 && <div className="palette-item">No command found</div>}
         </div>
       </div>
