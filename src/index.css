@@ -424,3 +424,23 @@ body {
     padding: 6px 10px;
   }
 }
+[data-theme="dark"] {
+  --bg-main: #0f172a;
+  --bg-editor: #020617;
+  --text-main: #e2e8f0;
+}
+
+[data-theme="light"] {
+  --bg-main: #f8fafc;
+  --bg-editor: #ffffff;
+  --text-main: #0f172a;
+}
+
+.app {
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+.editor-container {
+  background: var(--bg-editor);
+}

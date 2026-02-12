@@ -5,6 +5,8 @@ import Editor from "./components/Editor";
 import Tabs from "./components/Tabs";
 import CommandPalette from "./components/CommandPalette";
 import StatusBar from "./components/StatusBar";
+import Toolbar from "./components/Toolbar";
+import OutputPanel from "./components/OutputPanel";
 
 const TABS = ["index.js", "style.css", "README.md"];
 
@@ -21,6 +23,26 @@ function formatSavedTime(date) {
   return `Saved ${date.toLocaleTimeString()}`;
 }
 
+function formatSource(value, tab) {
+  if (tab === "README.md") {
+    return value
+      .split("\n")
+      .map((line) => line.trimEnd())
+      .join("\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trimEnd()
+      .concat("\n");
+  }
+
+  return value
+    .split("\n")
+    .map((line) => line.replace(/\t/g, "  ").trimEnd())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trimEnd()
+    .concat("\n");
+}
+
 export default function App() {
   const [files, setFiles] = useState(INITIAL_FILES);
   const [activeTab, setActiveTab] = useState(TABS[0]);
@@ -29,6 +51,8 @@ export default function App() {
   const [events, setEvents] = useState([]);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState("");
+  const [runOutput, setRunOutput] = useState("");
+  const [showOutput, setShowOutput] = useState(false);
 
   const typingTimeoutRef = useRef(null);
 
@@ -88,6 +112,40 @@ export default function App() {
     setStatus(formatSavedTime(new Date()));
   }, []);
 
+  const handleRun = useCallback(() => {
+    const source = files[activeTab] ?? "";
+    const timestamp = new Date().toLocaleTimeString();
+
+    let output = `[${timestamp}] ${activeTab}`;
+
+    if (!source.trim()) {
+      output += "\nNo content to run.";
+    } else if (activeTab === "index.js") {
+      output += "\nSimulated run complete.";
+      output += `\nCharacters: ${source.length}`;
+      output += `\nLines: ${source.split("\n").length}`;
+    } else if (activeTab === "style.css") {
+      output += "\nCSS parsed (simulated).";
+      output += `\nRules snapshot size: ${source.length} chars`;
+    } else {
+      output += "\nMarkdown preview refreshed (simulated).";
+      output += `\nSections: ${source.split("\n#").length}`;
+    }
+
+    setRunOutput(output);
+    setShowOutput(true);
+    setStatus("Ready");
+  }, [activeTab, files]);
+
+  const handleFormat = useCallback(() => {
+    setFiles((prev) => ({
+      ...prev,
+      [activeTab]: formatSource(prev[activeTab] ?? "", activeTab),
+    }));
+
+    setStatus("Ready");
+  }, [activeTab]);
+
   const handleFileChange = useCallback(
     (nextValue) => {
       setFiles((prev) => ({
@@ -142,15 +200,28 @@ export default function App() {
         </header>
 
         <div className="workspace">
-          <Editor
-            activeTab={activeTab}
-            files={files}
-            onChange={handleFileChange}
-            onSave={handleSave}
-            onOpenPalette={() => setIsPaletteOpen(true)}
-            onClosePalette={() => setIsPaletteOpen(false)}
-            onKeyUp={handleEditorKeyUp}
-          />
+          <div style={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
+            <Toolbar
+              onRun={handleRun}
+              onSave={handleSave}
+              onFormat={handleFormat}
+              onToggleTheme={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
+              theme={theme}
+            />
+
+            <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+              <Editor
+                activeTab={activeTab}
+                files={files}
+                onChange={handleFileChange}
+                onSave={handleSave}
+                onOpenPalette={() => setIsPaletteOpen(true)}
+                onClosePalette={() => setIsPaletteOpen(false)}
+                onKeyUp={handleEditorKeyUp}
+              />
+              <OutputPanel visible={showOutput} output={runOutput} />
+            </div>
+          </div>
 
           <aside className="debug-panel" aria-label="Keyboard events">
             <h3>Event Debugger</h3>
@@ -184,4 +255,3 @@ export default function App() {
     </>
   );
 }
-
