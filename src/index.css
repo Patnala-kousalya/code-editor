@@ -444,3 +444,26 @@ body {
 .editor-container {
   background: var(--bg-editor);
 }
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.editor-container {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
